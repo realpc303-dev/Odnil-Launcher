@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0b1220" id="themeColor">
+<title>Odnil Launcher</title>
+<style>
+:root{--font:"SamsungOne","Roboto","Segoe UI",system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+html,body{height:100%;background:#050507;font-family:var(--font);overflow:hidden;overscroll-behavior:none}
+body{display:flex;align-items:center;justify-content:center}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:10px}
+
+#app{position:relative;width:100%;height:100dvh;overflow:hidden;color:var(--text);user-select:none;-webkit-user-select:none}
+@media(min-width:700px){#app{width:410px;height:min(860px,96dvh);border-radius:38px;box-shadow:0 0 0 8px #15151b,0 30px 80px rgba(0,0,0,.6)}}
+#wall{position:absolute;inset:-12px;background-size:cover;background-position:center}
+#dim{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}
+
+/* home */
+#home{position:absolute;inset:0;display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top,0px) + 22px) 0 calc(env(safe-area-inset-bottom,0px) + 12px)}
+.clockw{text-align:center;padding:12px 14px 14px}
+.clockw.side{text-align:left;padding-left:26px}
+.clockw .t{font-size:76px;font-weight:var(--cw);letter-spacing:-2px;line-height:1}
+.clockw.small .t{font-size:42px}
+.clockw .t small{font-size:20px;font-weight:500;letter-spacing:0;margin-left:6px}
+.clockw .d{font-size:16px;margin-top:6px;opacity:.9}
+#pager{flex:1;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;touch-action:pan-x;min-height:0}
+#pager::-webkit-scrollbar{display:none}
+.pg{flex:0 0 100%;scroll-snap-align:start;padding:6px 14px 0;overflow:hidden}
+.wpg{overflow-y:auto;scrollbar-width:none;touch-action:pan-y}
+.grid{display:grid;grid-template-columns:repeat(var(--cols),1fr);gap:var(--gap) 4px;align-content:start}
+.app{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;padding:2px}
+.app span{font-size:var(--fsz);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-shadow:var(--shadow)}
+.nolabel .app span{display:none}
+.ic{width:var(--isz);height:var(--isz);border-radius:var(--shape);display:grid;place-items:center;color:#fff;font-weight:700;font-size:calc(var(--isz)*.42);box-shadow:0 3px 10px rgba(0,0,0,.22);flex:none}
+.ic svg{width:52%;height:52%}
+.ic.nat{background:transparent;box-shadow:none}
+.ic.nat img{width:100%;height:100%;object-fit:cover;display:block}
+.ic.nat.mask{overflow:hidden}
+.ic.nat:not(.mask){border-radius:0}
+.ic.nat.plate{background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.22)}
+.ic.nat.plate:not(.mask){border-radius:var(--shape);overflow:hidden}
+.app:active .ic{transform:scale(.92)}
+.dots{display:flex;justify-content:center;gap:7px;padding:10px 0 8px;min-height:26px}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--text);opacity:.35}
+.dots i.on{opacity:1;width:18px;border-radius:5px}
+.searchw{position:relative;margin:0 20px 14px}
+.search{height:48px;border-radius:999px;background:var(--glass);backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));display:flex;align-items:center;gap:10px;padding:0 16px}
+.search svg{width:20px;height:20px;stroke:var(--accent);fill:none;stroke-width:2.4;flex:none}
+.search input{flex:1;background:none;border:0;outline:0;min-width:0;color:var(--text)}
+.search input::placeholder{color:var(--text);opacity:.65}
+.sugg{display:none;position:absolute;left:0;right:0;bottom:56px;background:var(--drawerbg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:22px;padding:8px;gap:2px;flex-direction:column;z-index:3}
+.sugg.on{display:flex}
+.sg{display:flex;align-items:center;gap:12px;padding:6px 10px;border-radius:14px;text-align:left;color:var(--text)}
+.sg:active{background:var(--glass2)}
+.sg .ic{width:36px;height:36px;font-size:15px}
+.sg.web{opacity:.9}
+.dockw{margin:0 14px;border-radius:30px;background:var(--glass);backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));display:flex;justify-content:space-around;padding:12px 6px}
+.dockw .app span{display:none}
+
+/* widgets */
+.wc{background:var(--glass);backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));border-radius:24px;padding:14px 16px;margin-bottom:12px}
+.wc h4{font-size:15px;font-weight:600;margin-bottom:8px}
+.wc textarea{width:100%;min-height:96px;resize:none;background:transparent;border:0;outline:0;color:var(--text);user-select:text;-webkit-user-select:text;line-height:1.4}
+.wc textarea::placeholder{color:var(--text);opacity:.55}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:13px}
+.cal b{opacity:.6;font-weight:500}
+.cal span{padding:5px 0;border-radius:50%}
+.cal span.today{background:var(--accent);color:#fff;font-weight:700}
+.bar{height:8px;border-radius:5px;background:var(--glass2);overflow:hidden;margin-top:8px}
+.bar div{height:100%;background:var(--accent);width:0}
+.wh{font-size:13px;opacity:.75;text-align:center;padding:4px 0 10px}
+
+/* drawer */
+#drawer{position:absolute;inset:0;background:var(--drawerbg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);transform:translateY(102%);transition:transform .3s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 0;z-index:5}
+#drawer.open{transform:none}
+.dhead{touch-action:none;padding-bottom:6px}
+.handle{align-self:center;width:44px;height:5px;border-radius:5px;background:var(--text);opacity:.5;margin:0 auto 10px}
+#dq{width:100%;height:46px;border-radius:999px;border:0;background:var(--glass2);padding:0 18px;outline:0;color:var(--text)}
+#dq::placeholder{color:var(--text);opacity:.6}
+.dscroll{flex:1;overflow-y:auto;padding:16px 0 calc(env(safe-area-inset-bottom,0px) + 20px);scrollbar-width:none}
+.dscroll::-webkit-scrollbar{display:none}
+
+/* sheet */
+#shade{position:absolute;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:8}
+#shade.on{opacity:1;pointer-events:auto}
+#sheet{position:absolute;left:0;right:0;bottom:0;height:80%;background:var(--sheet);color:var(--sheetText);border-radius:30px 30px 0 0;transform:translateY(104%);transition:transform .3s cubic-bezier(.2,.8,.2,1);z-index:9;display:flex;flex-direction:column}
+#sheet.open{transform:none}
+.shead{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 6px}
+.shead h2{font-size:22px;font-weight:600}
+.done{padding:8px 18px;border-radius:999px;background:var(--accent);color:#fff;font-weight:600}
+.tabs{display:flex;gap:6px;padding:8px 16px;overflow-x:auto;scrollbar-width:none}
+.tab{padding:8px 16px;border-radius:999px;background:var(--chip);white-space:nowrap;font-weight:500}
+.tab.on{background:var(--accent);color:#fff}
+.sbody{flex:1;overflow-y:auto;padding:6px 20px calc(env(safe-area-inset-bottom,0px) + 24px);user-select:text;-webkit-user-select:text}
+.sbody h3{font-size:15px;font-weight:600;margin:20px 0 10px;opacity:.7}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.tcard{display:flex;flex-direction:column;gap:6px;align-items:center;font-size:13px}
+.tprev{width:100%;aspect-ratio:9/14;border-radius:16px;position:relative;overflow:hidden;border:3px solid transparent}
+.tprev i{position:absolute;left:14%;right:14%;bottom:8%;height:14%;border-radius:10px}
+.tprev b{position:absolute;left:50%;top:18%;transform:translateX(-50%);font-weight:300;font-size:18px}
+.tcard.on .tprev{border-color:var(--accent)}
+.tcard.on span{color:var(--accent);font-weight:600}
+.swatches{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.sw-c{width:36px;height:36px;border-radius:50%;border:3px solid transparent;box-shadow:inset 0 0 0 2px rgba(255,255,255,.4)}
+.sw-c.on{border-color:var(--sheetText)}
+input[type=color]{width:40px;height:40px;border:0;background:none;padding:0}
+.seg{display:flex;background:var(--chip);border-radius:14px;padding:3px;gap:3px}
+.seg button{flex:1;padding:9px 6px;border-radius:11px;font-size:14px}
+.seg button.on{background:var(--accent);color:#fff;font-weight:600}
+.rowt{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--chip)}
+.rowt input[type=checkbox]{appearance:none;-webkit-appearance:none;width:48px;height:28px;border-radius:999px;background:var(--chip);position:relative;transition:background .2s;flex:none}
+.rowt input[type=checkbox]::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.35);transition:transform .2s}
+.rowt input[type=checkbox]:checked{background:var(--accent)}
+.rowt input[type=checkbox]:checked::after{transform:translateX(20px)}
+.rng{display:block;padding:10px 0}
+.rng div{display:flex;justify-content:space-between;font-size:15px}
+.rng input{width:100%;accent-color:var(--accent);margin-top:8px}
+.wgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.wp{aspect-ratio:1;border-radius:14px;border:3px solid transparent}
+.wp.on{border-color:var(--accent)}
+.btn{padding:12px 18px;border-radius:14px;background:var(--accent);color:#fff;font-weight:600;display:inline-block;text-align:center;margin:4px 6px 4px 0}
+.btn.alt{background:var(--chip);color:var(--sheetText)}
+.alist .it{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--chip)}
+.alist .ic{width:40px;height:40px;box-shadow:none}
+.alist .nm{flex:1;min-width:0}
+.alist .nm small{display:block;opacity:.6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.alist .mini{padding:6px 10px;border-radius:10px;background:var(--chip);font-size:13px}
+.alist .mini.on{background:var(--accent);color:#fff}
+.form{display:grid;gap:10px;margin-top:8px}
+.form input[type=text]{padding:12px 14px;border-radius:12px;border:0;background:var(--chip);color:var(--sheetText);outline:0}
+.hint{font-size:13px;opacity:.65;margin-top:6px}
+
+/* menu + toast */
+#menu{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.95);width:min(310px,88%);max-height:86%;overflow-y:auto;background:var(--sheet);color:var(--sheetText);border-radius:24px;padding:10px;z-index:12;opacity:0;pointer-events:none;transition:.18s}
+#menu.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}
+#menu h4{padding:10px 14px 6px;font-size:16px}
+#menu button{display:block;width:100%;text-align:left;padding:12px 14px;border-radius:14px;font-size:16px}
+#menu button:active{background:var(--chip)}
+#toast{position:absolute;left:50%;bottom:110px;transform:translateX(-50%);background:rgba(20,20,25,.92);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:20;white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
+#toast.on{opacity:1}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="wall"></div><div id="dim"></div>
+
+  <div id="home">
+    <div class="clockw" id="clockw"><div class="t" id="ct"></div><div class="d" id="cd"></div></div>
+    <div id="pager"></div>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <div class="searchw">
+      <div class="sugg" id="sugg"></div>
+      <form class="search" id="sform"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="sq" type="search" placeholder="Search apps or the web" aria-label="Search apps or the web" autocomplete="off"></form>
+    </div>
+    <div class="dockw" id="dock"></div>
+  </div>
+
+  <div id="drawer" aria-label="All apps">
+    <div class="dhead" id="dhead"><div class="handle"></div><input id="dq" type="search" placeholder="Search apps" aria-label="Search apps" autocomplete="off"></div>
+    <div class="dscroll"><div class="grid" id="dgrid"></div></div>
+  </div>
+
+  <div id="shade"></div>
+  <div id="sheet" role="dialog" aria-label="Customize">
+    <div class="shead"><h2>Themes and style</h2><button class="done" data-act="closeSheet">Done</button></div>
+    <div class="tabs" id="tabs"></div>
+    <div class="sbody" id="sbody"></div>
+  </div>
+  <div id="menu"></div>
+  <div id="toast"></div>
+</div>
+
+<script>
+/* ============ ICONS AND DEFAULT APPS ============ */
+const svg = i => `<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${i}</svg>`;
+const ICONS = {
+  phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
+  msg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  chat:'<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>',
+  globe:'<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+  camera:'<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
+  image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',
+  play:'<path d="M5 3l14 9-14 9z"/>',
+  pin:'<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
+  sliders:'<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
+  bag:'<path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>',
+  mail:'<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/>',
+  drop:'<path d="M12 2.7l5.7 5.7a8 8 0 1 1-11.4 0z"/>',
+  clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+  calc:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 11h2M14 11h2M8 15h2M14 15h2M8 19h2M14 19h2"/>',
+  user:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  music:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+  cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>'
+};
+const cat = c => `intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.${c};end`;
+const act = a => `intent:#Intent;action=${a};end`;
+const pkg = p => `intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=${p};end`;
+
+const DEFAULT_APPS = [
+  {id:"phone",name:"Phone",icon:"phone",color:"#34C759",target:act("android.intent.action.DIAL")},
+  {id:"messages",name:"Messages",icon:"msg",color:"#3E91FF",target:cat("APP_MESSAGING")},
+  {id:"chrome",name:"Internet",icon:"globe",color:"#7B5CFF",target:cat("APP_BROWSER")},
+  {id:"camera",name:"Camera",icon:"camera",color:"#FF5A5F",target:act("android.media.action.STILL_IMAGE_CAMERA")},
+  {id:"whatsapp",name:"WhatsApp",icon:"chat",color:"#25D366",target:pkg("com.whatsapp")},
+  {id:"youtube",name:"YouTube",icon:"play",color:"#FF3B30",target:pkg("com.google.android.youtube")},
+  {id:"gallery",name:"Gallery",icon:"image",color:"#FF9F0A",target:cat("APP_GALLERY")},
+  {id:"maps",name:"Maps",icon:"pin",color:"#34A853",target:cat("APP_MAPS")},
+  {id:"store",name:"Play Store",icon:"bag",color:"#0A84FF",target:pkg("com.android.vending")},
+  {id:"gmail",name:"Email",icon:"mail",color:"#EA4335",target:cat("APP_EMAIL")},
+  {id:"clock",name:"Clock",icon:"clock",color:"#5E5CE6",target:act("android.intent.action.SHOW_ALARMS")},
+  {id:"themes",name:"Themes",icon:"drop",color:"#FF2D92",target:"internal:themes"},
+  {id:"settings",name:"Settings",icon:"sliders",color:"#8E8E93",target:act("android.settings.SETTINGS")},
+  {id:"calc",name:"Calculator",icon:"calc",color:"#FF9500",target:cat("APP_CALCULATOR")},
+  {id:"contacts",name:"Contacts",icon:"user",color:"#30B0C7",target:cat("APP_CONTACTS")},
+  {id:"calendar",name:"Calendar",icon:"cal",color:"#FF453A",target:cat("APP_CALENDAR")},
+  {id:"music",name:"Music",icon:"music",color:"#BF5AF2",target:cat("APP_MUSIC")}
+];
+const INTERNAL = [{id:"themes",name:"Themes",icon:"drop",color:"#FF2D92",target:"internal:themes"}];
+const DEF_HOME = ["whatsapp","youtube","gallery","maps","store","gmail","clock","themes","settings","calc","contacts","calendar"];
+const DEF_DOCK = ["phone","messages","chrome","camera"];
+
+const THEMES = [
+  {id:"light", name:"One UI Light", wall:"linear-gradient(160deg,#dbe7f7,#f3e6f0 55%,#fbe6d8)", text:"#111", glass:"rgba(255,255,255,.55)", sheet:"#f2f2f7", st:"#111", chip:"rgba(0,0,0,.07)", drawer:"rgba(240,242,248,.9)", dark:false},
+  {id:"dark",  name:"One UI Dark",  wall:"linear-gradient(160deg,#0b1220,#1b2740 60%,#2a3a5e)", text:"#fff", glass:"rgba(40,46,60,.55)", sheet:"#1c1c1e", st:"#fff", chip:"rgba(255,255,255,.1)", drawer:"rgba(14,18,28,.9)", dark:true},
+  {id:"ocean", name:"Ocean",        wall:"linear-gradient(170deg,#0f4c81,#1ca7c9 60%,#a8e6e0)", text:"#fff", glass:"rgba(255,255,255,.22)", sheet:"#eaf6fa", st:"#0b2a3a", chip:"rgba(0,0,0,.07)", drawer:"rgba(8,60,90,.86)", dark:false},
+  {id:"forest",name:"Forest",       wall:"linear-gradient(170deg,#12372a,#2d6a4f 60%,#95d5b2)", text:"#fff", glass:"rgba(255,255,255,.2)", sheet:"#ecf5ef", st:"#10281f", chip:"rgba(0,0,0,.07)", drawer:"rgba(16,50,38,.88)", dark:false},
+  {id:"sunset",name:"Sunset",       wall:"linear-gradient(170deg,#3a1c71,#d76d77 60%,#ffaf7b)", text:"#fff", glass:"rgba(255,255,255,.2)", sheet:"#fff1ea", st:"#3a1c31", chip:"rgba(0,0,0,.07)", drawer:"rgba(58,28,100,.88)", dark:false},
+  {id:"rose",  name:"Rose",         wall:"linear-gradient(170deg,#ffe3ea,#ffb3c6 60%,#fb6f92)", text:"#3b0a1f", glass:"rgba(255,255,255,.45)", sheet:"#fff0f4", st:"#3b0a1f", chip:"rgba(0,0,0,.07)", drawer:"rgba(255,224,232,.92)", dark:false},
+  {id:"lav",   name:"Lavender",     wall:"linear-gradient(170deg,#e0c3fc,#b9c8fb 55%,#8ec5fc)", text:"#1a1033", glass:"rgba(255,255,255,.45)", sheet:"#f4eefc", st:"#1a1033", chip:"rgba(0,0,0,.07)", drawer:"rgba(236,224,252,.92)", dark:false},
+  {id:"amoled",name:"AMOLED Black", wall:"#000", text:"#fff", glass:"rgba(255,255,255,.12)", sheet:"#111", st:"#fff", chip:"rgba(255,255,255,.1)", drawer:"rgba(0,0,0,.94)", dark:true},
+  {id:"mocha", name:"Mocha",        wall:"linear-gradient(170deg,#2b1d16,#6b4a37 60%,#d2a679)", text:"#fff", glass:"rgba(255,255,255,.18)", sheet:"#f6eee6", st:"#2b1d16", chip:"rgba(0,0,0,.07)", drawer:"rgba(43,29,22,.9)", dark:false}
+];
+const WALLS = [
+  ["Aurora","linear-gradient(160deg,#0f2027,#2c5364 50%,#00c9a7)"],
+  ["Candy","linear-gradient(160deg,#ff9a9e,#fad0c4 55%,#a18cd1)"],
+  ["Night City","linear-gradient(160deg,#0f0c29,#302b63 55%,#24243e)"],
+  ["Lemon","linear-gradient(160deg,#f7971e,#ffd200)"],
+  ["Berry","linear-gradient(160deg,#42275a,#734b6d)"],
+  ["Mint","linear-gradient(160deg,#00b09b,#96c93d)"],
+  ["Fire","linear-gradient(160deg,#f12711,#f5af19)"],
+  ["Steel","linear-gradient(160deg,#232526,#414345)"]
+];
+const ACCENTS = ["#3E91FF","#34C759","#FF9F0A","#FF3B30","#BF5AF2","#FF2D92","#30B0C7","#8E8E93"];
+const SHAPES = {squircle:"32%", circle:"50%", rounded:"20%", square:"8%", teardrop:"50% 50% 50% 14%"};
+const NUMKEYS = new Set(["cols","cweight","isz","fsz","gap","blurPx","dim","blur"]);
+
+/* ============ NATIVE BRIDGE (only inside the APK) ============ */
+const NATIVE_ON = !!(window.Capacitor && typeof Capacitor.isNativePlatform === "function" && Capacitor.isNativePlatform());
+let LP = null;
+if(NATIVE_ON){
+  try{ LP = Capacitor.registerPlugin("Launcher"); }catch(e){ LP = (Capacitor.Plugins || {}).Launcher || null; }
+}
+let NATIVE = [];
+
+/* ============ STATE ============ */
+const KEY = "odnil-launcher-v1";
+const clone = o => JSON.parse(JSON.stringify(o));
+const defaults = () => ({theme:"light", auto:false, night:"dark", accent:"#3E91FF", wall:"theme", wallImg:"", dim:0, blur:0,
+  shape:"squircle", isz:58, fsz:12, cols:4, gap:18, labels:true, clock:"big", cweight:300, h24:false,
+  showSearch:true, showDock:true, glass:true, blurPx:18, mask:true, plate:true, swipeDown:true, sort:"az",
+  widgets:true, wNotes:true, wCal:true, wBat:true, notes:"",
+  apps:null, pages:null, dock:null, hidden:[], usage:{}, renames:{}, nativeLaid:false});
+let S, saved = {};
+try{ saved = JSON.parse(localStorage.getItem(KEY) || "{}"); }catch(e){ saved = {}; }
+S = Object.assign(defaults(), saved);
+if(!S.apps) S.apps = clone(DEFAULT_APPS);
+if(!S.pages) S.pages = [(saved.home || DEF_HOME).slice()];
+if(!S.dock) S.dock = DEF_DOCK.slice();
+delete S.home;
+let saveFail = false;
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); saveFail = false; }catch(e){ if(!saveFail){ saveFail = true; toast("Could not save. Try a smaller wallpaper photo."); } } }
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let _map = null;
+function allApps(){ return NATIVE_ON ? NATIVE.concat(INTERNAL, S.apps.filter(a => a.custom)) : S.apps; }
+function appMap(){ return _map || (_map = new Map(allApps().map(a => [a.id, a]))); }
+const byId = id => appMap().get(id);
+const nameOf = a => S.renames[a.id] || a.name;
+const visibleApps = () => allApps().filter(a => !S.hidden.includes(a.id));
+function theme(){
+  let id = S.theme;
+  if(S.auto){ const h = new Date().getHours(); if(h >= 19 || h < 6) id = S.night; }
+  return THEMES.find(t => t.id === id) || THEMES[0];
+}
+
+/* ============ LOOK ============ */
+function look(){
+  const t = theme(), app = $("#app");
+  const custom = !!S.wallImg || S.wall !== "theme";
+  const wallCss = S.wallImg ? `url(${S.wallImg}) center/cover` : (S.wall !== "theme" ? (WALLS.find(w => w[0] === S.wall) || [0, t.wall])[1] : t.wall);
+  const text = custom ? "#fff" : t.text;
+  const st = app.style;
+  st.setProperty("--text", text);
+  st.setProperty("--accent", S.accent);
+  st.setProperty("--glass", custom ? "rgba(0,0,0,.32)" : t.glass);
+  st.setProperty("--glass2", custom ? "rgba(255,255,255,.18)" : t.chip);
+  st.setProperty("--drawerbg", custom ? "rgba(10,10,16,.8)" : t.drawer);
+  st.setProperty("--sheet", t.sheet);
+  st.setProperty("--sheetText", t.st);
+  st.setProperty("--chip", t.chip);
+  st.setProperty("--shadow", text === "#fff" ? "0 1px 3px rgba(0,0,0,.45)" : "none");
+  st.setProperty("--shape", SHAPES[S.shape] || SHAPES.squircle);
+  st.setProperty("--isz", S.isz + "px");
+  st.setProperty("--fsz", S.fsz + "px");
+  st.setProperty("--cols", S.cols);
+  st.setProperty("--gap", S.gap + "px");
+  st.setProperty("--cw", S.cweight);
+  st.setProperty("--blur", S.glass ? S.blurPx + "px" : "0px");
+  $("#wall").style.background = wallCss;
+  $("#wall").style.filter = S.blur ? `blur(${S.blur}px)` : "none";
+  $("#dim").style.opacity = S.dim / 100;
+  $("#themeColor").content = t.dark ? "#0b1220" : "#dbe7f7";
+  app.classList.toggle("nolabel", !S.labels);
+}
+function apply(){
+  _map = null; look(); renderHome();
+  if($("#drawer").classList.contains("open")) renderDrawer();
+}
+
+/* ============ RENDER ============ */
+function icon(a){
+  if(a.icon64) return `<div class="ic nat ${S.mask ? "mask" : ""} ${S.plate ? "plate" : ""}"><img alt="" src="data:image/png;base64,${a.icon64}"></div>`;
+  const g = ICONS[a.icon];
+  return `<div class="ic" style="background:${esc(a.color || "#3E91FF")}">${g ? svg(g) : esc(nameOf(a).trim().charAt(0).toUpperCase())}</div>`;
+}
+const cell = a => `<button class="app" data-id="${esc(a.id)}" aria-label="${esc(nameOf(a))}">${icon(a)}<span>${esc(nameOf(a))}</span></button>`;
+
+function calHTML(){
+  const d = new Date(), y = d.getFullYear(), mo = d.getMonth();
+  const first = new Date(y, mo, 1).getDay(), days = new Date(y, mo + 1, 0).getDate();
+  let c = ["S","M","T","W","T","F","S"].map(x => `<b>${x}</b>`).join("");
+  for(let i = 0; i < first; i++) c += "<i></i>";
+  for(let n = 1; n <= days; n++) c += `<span class="${n === d.getDate() ? "today" : ""}">${n}</span>`;
+  return `<div class="wc"><h4>${esc(d.toLocaleDateString([], {month:"long", year:"numeric"}))}</h4><div class="cal">${c}</div></div>`;
+}
+function widgetsHTML(){
+  let h = "";
+  if(S.wNotes) h += `<div class="wc"><h4>Quick notes</h4><textarea id="nt" placeholder="Type a note...">${esc(S.notes)}</textarea></div>`;
+  if(S.wCal) h += calHTML();
+  if(S.wBat) h += `<div class="wc"><h4>Battery</h4><div id="bat">Checking...</div><div class="bar"><div id="batbar"></div></div></div>`;
+  if(!h) h = `<p class="wh">Turn widgets on in Themes and style, then Widgets.</p>`;
+  return h;
+}
+function updateBattery(){
+  const el = $("#bat"); if(!el) return;
+  if(!navigator.getBattery){ el.closest(".wc").remove(); return; }
+  navigator.getBattery().then(b => {
+    const f = () => { const e = $("#bat"); if(!e) return; const p = Math.round(b.level * 100); e.textContent = p + "%" + (b.charging ? " (charging)" : ""); $("#batbar").style.width = p + "%"; };
+    f(); b.onlevelchange = f; b.onchargingchange = f;
+  }).catch(() => { const e = $("#bat"); if(e) e.closest(".wc").remove(); });
+}
+let firstRender = true;
+function renderHome(){
+  const m = appMap(), pager = $("#pager"), sl = pager.scrollLeft;
+  let h = "";
+  if(S.widgets) h += `<section class="pg wpg" aria-label="Widgets">${widgetsHTML()}</section>`;
+  S.pages.forEach(p => {
+    h += `<section class="pg"><div class="grid">${p.map(id => m.get(id)).filter(a => a && !S.hidden.includes(a.id)).map(cell).join("")}</div></section>`;
+  });
+  pager.innerHTML = h;
+  pager.style.scrollBehavior = "auto";
+  pager.scrollLeft = firstRender ? (S.widgets ? pager.clientWidth : 0) : sl;
+  firstRender = false;
+  $("#dock").innerHTML = S.dock.map(id => m.get(id)).filter(a => a && !S.hidden.includes(a.id)).map(cell).join("");
+  $("#dock").style.display = S.showDock ? "flex" : "none";
+  $(".searchw").style.display = S.showSearch ? "block" : "none";
+  const cw = $("#clockw");
+  cw.style.display = S.clock === "none" ? "none" : "";
+  cw.className = "clockw" + (S.clock === "small" ? " small" : S.clock === "side" ? " side" : "");
+  tick(); renderDots(); if(S.widgets) updateBattery();
+}
+function renderDrawer(){
+  const q = $("#dq").value.trim().toLowerCase();
+  let list = visibleApps().filter(a => !q || nameOf(a).toLowerCase().includes(q));
+  list.sort((a, b) => S.sort === "used" ? ((S.usage[b.id] || 0) - (S.usage[a.id] || 0)) || nameOf(a).localeCompare(nameOf(b)) : nameOf(a).localeCompare(nameOf(b)));
+  $("#dgrid").innerHTML = list.length ? list.map(cell).join("") : `<p style="grid-column:1/-1;text-align:center;opacity:.7;padding:30px 0">No apps match.</p>`;
+}
+function renderDots(){
+  const p = $("#pager"), n = p.children.length;
+  const cur = Math.min(n - 1, Math.max(0, Math.round(p.scrollLeft / (p.clientWidth || 1))));
+  $("#dots").innerHTML = n > 1 ? Array.from({length:n}, (_, i) => `<i class="${i === cur ? "on" : ""}"></i>`).join("") : "";
+}
+$("#pager").addEventListener("scroll", renderDots, {passive:true});
+function curHomePage(){
+  const p = $("#pager"), i = Math.round(p.scrollLeft / (p.clientWidth || 1)) - (S.widgets ? 1 : 0);
+  return Math.min(Math.max(i, 0), S.pages.length - 1);
+}
+function goHomePage(){ const p = $("#pager"); p.style.scrollBehavior = "smooth"; p.scrollLeft = (S.widgets ? 1 : 0) * p.clientWidth; }
+
+function tick(){
+  const d = new Date();
+  let t = d.toLocaleTimeString([], {hour:"numeric", minute:"2-digit", hour12:!S.h24});
+  let suffix = "";
+  const m = t.match(/\s?(AM|PM|am|pm)$/);
+  if(m){ suffix = m[1].toUpperCase(); t = t.replace(/\s?(AM|PM|am|pm)$/, ""); }
+  $("#ct").innerHTML = esc(t) + (suffix ? `<small>${suffix}</small>` : "");
+  $("#cd").textContent = d.toLocaleDateString([], {weekday:"long", day:"numeric", month:"long"});
+}
+setInterval(tick, 1000);
+setInterval(look, 60000);
+
+function toast(msg){ const t = $("#toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove("on"), 2400); }
+
+/* ============ LAUNCHING ============ */
+function openLink(url){
+  if(LP){ LP.openUri({uri:url}).catch(() => toast("Could not open that link")); }
+  else if(/^https?:/i.test(url)) window.open(url, "_blank", "noopener");
+  else location.href = url;
+}
+function launch(a){
+  S.usage[a.id] = (S.usage[a.id] || 0) + 1; save();
+  const tg = a.target || "";
+  if(tg === "internal:themes"){ openSheet("themes"); return; }
+  if(a.native && LP){ LP.launch({pkg:a.pkg}).catch(() => toast("Could not open " + nameOf(a))); return; }
+  toast("Opening " + nameOf(a) + "...");
+  openLink(tg);
+}
+function normalizeTarget(v){
+  v = v.trim();
+  if(!v) return "";
+  if(/^[a-z][a-z0-9+.-]*:/i.test(v)) return v;
+  if(/^[a-z][a-z0-9_]*(\.[a-z0-9_]+)+$/i.test(v)) return pkg(v);
+  return "https://" + v;
+}
+
+/* ============ INSTALLED APPS (APK only) ============ */
+function autoLayout(){
+  if(S.nativeLaid || !NATIVE.length) return;
+  const pick = re => NATIVE.find(a => re.test(a.name));
+  const dock = [/^(phone|dialer|call)/i, /^(messages|messaging|sms)/i, /^(internet|chrome|browser|firefox)/i, /^camera/i].map(pick).filter(Boolean);
+  const used = new Set(dock.map(a => a.id));
+  const home = [/whatsapp/i, /youtube$/i, /^(gallery|photos)/i, /^maps/i, /play store/i, /^(gmail|email)/i, /^clock/i, /calculator/i, /^contacts/i, /^calendar/i, /^settings$/i, /^(music|spotify)/i]
+    .map(pick).filter(a => a && !used.has(a.id)).map(a => a.id);
+  S.dock = dock.map(a => a.id);
+  S.pages = [home.concat("themes")];
+  S.nativeLaid = true; save();
+}
+async function loadNative(quiet){
+  if(!LP) return;
+  try{
+    const r = await LP.getApps();
+    NATIVE = (r.apps || []).map(a => ({id:"p:" + a.pkg, pkg:a.pkg, name:a.name, icon64:a.icon, native:true}));
+    autoLayout(); apply();
+    if(!quiet) toast(NATIVE.length + " apps loaded");
+  }catch(e){ toast("Could not read installed apps"); }
+}
+if(LP){
+  loadNative(true);
+  document.addEventListener("visibilitychange", () => { if(!document.hidden) loadNative(true); });
+  if(LP.addListener) LP.addListener("homePressed", () => { closeAll(); goHomePage(); });
+}
+
+/* ============ GESTURES ============ */
+let press = null;
+function clearPress(){ if(press){ clearTimeout(press.timer); press = null; } }
+document.addEventListener("pointerdown", e => {
+  if(e.target.closest("#sheet,#menu,#shade,input,textarea,.sg")) return;
+  const appEl = e.target.closest(".app");
+  press = {x:e.clientX, y:e.clientY, appEl, fired:false};
+  if(appEl){
+    press.timer = setTimeout(() => { if(press){ press.fired = true; navigator.vibrate && navigator.vibrate(15); openMenu(appEl.dataset.id); } }, 450);
+  } else if(e.target.closest("#home") && !e.target.closest("#dock,.searchw,.wc")){
+    press.timer = setTimeout(() => { if(press){ press.fired = true; navigator.vibrate && navigator.vibrate(15); openSheet("themes"); } }, 600);
+  }
+});
+document.addEventListener("pointermove", e => {
+  if(press && Math.hypot(e.clientX - press.x, e.clientY - press.y) > 10) clearTimeout(press.timer);
+});
+document.addEventListener("pointerup", e => {
+  if(!press) return;
+  const p = press; clearPress();
+  if(p.fired) return;
+  const dx = e.clientX - p.x, dy = e.clientY - p.y;
+  const drawerOpen = $("#drawer").classList.contains("open");
+  if(!drawerOpen && dy < -70 && Math.abs(dx) < 90){ openDrawer(false); return; }
+  if(!drawerOpen && S.swipeDown && dy > 90 && Math.abs(dx) < 90 && !p.appEl){ openDrawer(true); return; }
+  if(drawerOpen && dy > 90 && Math.abs(dx) < 90 && e.target.closest("#dhead")){ closeDrawer(); return; }
+  if(Math.hypot(dx, dy) < 10 && p.appEl){ const a = byId(p.appEl.dataset.id); if(a) launch(a); }
+});
+document.addEventListener("pointercancel", clearPress);
+document.addEventListener("contextmenu", e => e.preventDefault());
+
+function openDrawer(focus){ $("#dq").value = ""; renderDrawer(); $("#drawer").classList.add("open"); if(focus) setTimeout(() => $("#dq").focus(), 280); }
+function closeDrawer(){ $("#drawer").classList.remove("open"); $("#dq").blur(); }
+function closeAll(){ closeMenu(); closeSheet(); closeDrawer(); }
+$("#dq").addEventListener("input", renderDrawer);
+
+/* back and home buttons */
+history.replaceState({r:1}, ""); history.pushState({r:2}, "");
+window.addEventListener("popstate", () => {
+  if($("#menu").classList.contains("on")) closeMenu();
+  else if($("#sheet").classList.contains("open")) closeSheet();
+  else if($("#drawer").classList.contains("open")) closeDrawer();
+  else goHomePage();
+  history.pushState({r:2}, "");
+});
+document.addEventListener("keydown", e => {
+  if(e.key !== "Escape") return;
+  if($("#menu").classList.contains("on")) closeMenu();
+  else if($("#sheet").classList.contains("open")) closeSheet();
+  else if($("#drawer").classList.contains("open")) closeDrawer();
+});
+
+/* ============ SEARCH ============ */
+let lastRes = [];
+function webSearch(q){ openLink("https://www.google.com/search?q=" + encodeURIComponent(q)); }
+function suggest(){
+  const q = $("#sq").value.trim(), box = $("#sugg");
+  if(!q){ box.innerHTML = ""; box.classList.remove("on"); lastRes = []; return; }
+  const ql = q.toLowerCase();
+  lastRes = visibleApps().filter(a => nameOf(a).toLowerCase().includes(ql))
+    .sort((a, b) => (nameOf(b).toLowerCase().startsWith(ql) ? 1 : 0) - (nameOf(a).toLowerCase().startsWith(ql) ? 1 : 0) || nameOf(a).localeCompare(nameOf(b))).slice(0, 4);
+  box.innerHTML = lastRes.map(a => `<button type="button" class="sg" data-sg="${esc(a.id)}">${icon(a)}<span>${esc(nameOf(a))}</span></button>`).join("") +
+    `<button type="button" class="sg web" data-web="1"><div class="ic" style="background:var(--accent)">${svg('<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>')}</div><span>Search the web for "${esc(q)}"</span></button>`;
+  box.classList.add("on");
+}
+$("#sq").addEventListener("input", suggest);
+$("#sform").addEventListener("submit", e => {
+  e.preventDefault();
+  const q = $("#sq").value.trim(); if(!q) return;
+  if(lastRes[0] && nameOf(lastRes[0]).toLowerCase().startsWith(q.toLowerCase())) launch(lastRes[0]); else webSearch(q);
+  $("#sq").value = ""; suggest();
+});
+document.addEventListener("click", e => {
+  const s = e.target.closest("[data-sg]");
+  if(s){ const a = byId(s.dataset.sg); $("#sq").value = ""; suggest(); if(a) launch(a); return; }
+  if(e.target.closest("[data-web]")){ const q = $("#sq").value.trim(); $("#sq").value = ""; suggest(); if(q) webSearch(q); }
+});
+
+/* ============ APP MENU ============ */
+function openMenu(id){
+  const a = byId(id); if(!a) return;
+  const inHome = S.pages.some(p => p.includes(id)), inDock = S.dock.includes(id);
+  const b = (m, l) => `<button data-m="${m}" data-id="${esc(id)}">${l}</button>`;
+  $("#menu").innerHTML = `<h4>${esc(nameOf(a))}</h4>` + b("open","Open") +
+    b(inHome ? "unhome" : "home", inHome ? "Remove from Home screen" : "Add to this Home page") +
+    b(inDock ? "undock" : "dock", inDock ? "Unpin from dock" : "Pin to dock") +
+    b("rename","Rename") + b("hide","Hide app") +
+    (a.native ? b("info","App info") + b("uninstall","Uninstall") : "") +
+    (a.custom || (!NATIVE_ON && !a.native) ? b("del","Delete shortcut") : "") + b("x","Cancel");
+  $("#menu").classList.add("on"); $("#shade").classList.add("on");
+}
+function closeMenu(){ $("#menu").classList.remove("on"); if(!$("#sheet").classList.contains("open")) $("#shade").classList.remove("on"); }
+$("#menu").addEventListener("click", e => {
+  const b = e.target.closest("button"); if(!b) return;
+  const id = b.dataset.id, m = b.dataset.m, a = byId(id);
+  closeMenu();
+  if(m === "open" && a) launch(a);
+  if(m === "home"){ const pg = S.pages[curHomePage()]; if(!pg.includes(id)) pg.push(id); }
+  if(m === "unhome"){ S.pages = S.pages.map(p => p.filter(x => x !== id)); }
+  if(m === "dock"){ S.dock = S.dock.filter(x => x !== id); S.dock.push(id); if(S.dock.length > 5) S.dock.shift(); }
+  if(m === "undock"){ S.dock = S.dock.filter(x => x !== id); }
+  if(m === "hide" && a){ if(!S.hidden.includes(id)) S.hidden.push(id); toast(nameOf(a) + " hidden. Unhide it in More > Apps."); }
+  if(m === "rename" && a){ const n = prompt("New name", nameOf(a)); if(n && n.trim()) S.renames[id] = n.trim(); }
+  if(m === "info" && LP && a) LP.appInfo({pkg:a.pkg});
+  if(m === "uninstall" && LP && a) LP.uninstall({pkg:a.pkg});
+  if(m === "del" && a && confirm("Delete " + nameOf(a) + "?")){
+    S.apps = S.apps.filter(x => x.id !== id); S.pages = S.pages.map(p => p.filter(x => x !== id)); S.dock = S.dock.filter(x => x !== id);
+  }
+  save(); apply();
+});
+$("#shade").addEventListener("click", () => { closeMenu(); closeSheet(); });
+
+/* ============ CUSTOMIZE SHEET ============ */
+let tab = "themes", sheetTab = "";
+const TABS = [["themes","Themes"],["style","Style"],["wall","Wallpaper"],["widgets","Pages"],["apps","Apps"],["more","More"]];
+function openSheet(t){ if(t) tab = t; renderSheet(); $("#sheet").classList.add("open"); $("#shade").classList.add("on"); }
+function closeSheet(){ $("#sheet").classList.remove("open"); if(!$("#menu").classList.contains("on")) $("#shade").classList.remove("on"); }
+
+const seg = (k, opts) => `<div class="seg">${opts.map(([v, l]) => `<button data-act="set" data-k="${k}" data-v="${v}" class="${String(S[k]) === String(v) ? "on" : ""}">${l}</button>`).join("")}</div>`;
+const tog = (k, label) => `<label class="rowt"><span>${label}</span><input type="checkbox" data-act="tog" data-k="${k}" ${S[k] ? "checked" : ""}></label>`;
+const rng = (k, label, min, max, unit) => `<label class="rng"><div><span>${label}</span><b id="v_${k}">${S[k]}${unit || ""}</b></div><input type="range" data-act="rng" data-k="${k}" data-u="${unit || ""}" min="${min}" max="${max}" value="${S[k]}"></label>`;
+
+function renderSheet(){
+  $("#tabs").innerHTML = TABS.map(([id, l]) => `<button class="tab ${tab === id ? "on" : ""}" data-act="tab" data-v="${id}">${l}</button>`).join("");
+  let h = "";
+  if(tab === "themes"){
+    h = `<h3>Choose a theme</h3><div class="tgrid">${THEMES.map(t => `<button class="tcard ${S.theme === t.id && S.wall === "theme" && !S.wallImg ? "on" : ""}" data-act="theme" data-v="${t.id}"><div class="tprev" style="background:${t.wall};color:${t.text}"><b>10:24</b><i style="background:${t.glass}"></i></div><span>${esc(t.name)}</span></button>`).join("")}</div>
+    <h3>Accent colour</h3><div class="swatches">${ACCENTS.map(c => `<button class="sw-c ${S.accent === c ? "on" : ""}" style="background:${c}" data-act="accent" data-v="${c}" aria-label="Accent ${c}"></button>`).join("")}<input type="color" value="${S.accent}" data-act="accentPick" aria-label="Custom accent colour"></div>
+    ${tog("auto","Switch to a dark theme at night")}
+    ${S.auto ? `<h3>Night theme (7 pm to 6 am)</h3>${seg("night", [["dark","One UI Dark"],["amoled","AMOLED"],["forest","Forest"]])}` : ""}
+    <p class="hint">Tip: long-press an empty spot on the home screen to open this panel.</p>`;
+  } else if(tab === "style"){
+    h = `<h3>Icon shape</h3>${seg("shape", [["squircle","Squircle"],["circle","Circle"],["rounded","Rounded"],["square","Square"],["teardrop","Drop"]])}
+    ${rng("isz","Icon size",42,76,"px")}${rng("gap","Row spacing",6,34,"px")}${rng("fsz","Label size",10,16,"px")}
+    <h3>Grid columns</h3>${seg("cols", [[4,"4"],[5,"5"],[6,"6"]])}
+    <h3>Clock</h3>${seg("clock", [["big","Big"],["small","Small"],["side","Left"],["none","Hidden"]])}
+    <h3>Clock weight</h3>${seg("cweight", [[200,"Thin"],[300,"Light"],[400,"Regular"],[600,"Bold"]])}
+    ${tog("h24","24-hour clock")}${tog("labels","Show app names")}${tog("showSearch","Show search bar")}${tog("showDock","Show dock")}
+    ${tog("mask","Apply icon shape to real app icons")}${tog("plate","White plate behind real app icons")}
+    ${tog("glass","Frosted glass effect")}${S.glass ? rng("blurPx","Glass blur",4,34,"px") : ""}`;
+  } else if(tab === "wall"){
+    h = `<h3>Wallpapers</h3><div class="wgrid">
+      <button class="wp ${S.wall === "theme" && !S.wallImg ? "on" : ""}" style="background:${theme().wall}" data-act="wall" data-v="theme" aria-label="Theme wallpaper"></button>
+      ${WALLS.map(w => `<button class="wp ${S.wall === w[0] && !S.wallImg ? "on" : ""}" style="background:${w[1]}" data-act="wall" data-v="${esc(w[0])}" aria-label="${esc(w[0])}"></button>`).join("")}</div>
+    <h3>Your photo</h3><label class="btn alt" style="cursor:pointer">Choose from gallery<input type="file" accept="image/*" data-act="photo" hidden></label>
+    ${S.wallImg ? `<button class="btn alt" data-act="nophoto">Remove photo</button>` : ""}
+    ${rng("dim","Dim wallpaper",0,70,"%")}${rng("blur","Blur wallpaper",0,14,"px")}`;
+  } else if(tab === "widgets"){
+    const total = S.pages.length;
+    h = `<h3>Home pages</h3><p class="hint" style="margin:0 0 8px">You have ${total} home ${total === 1 ? "page" : "pages"}. Swipe left or right on the home screen to move between them.</p>
+    <button class="btn" data-act="addPage" ${total >= 5 ? "disabled" : ""}>Add a page</button><button class="btn alt" data-act="delPage" ${total <= 1 ? "disabled" : ""}>Remove last page</button>
+    <h3>Widget page (swipe right from Home)</h3>
+    ${tog("widgets","Show widget page")}${tog("wNotes","Quick notes")}${tog("wCal","Calendar")}${tog("wBat","Battery")}`;
+  } else if(tab === "apps"){
+    const list = allApps().slice().sort((a, b) => nameOf(a).localeCompare(nameOf(b)));
+    h = `<h3>All apps (${list.length})</h3><div class="alist">${list.map(a => {
+      const onH = S.pages.some(p => p.includes(a.id)), hid = S.hidden.includes(a.id);
+      return `<div class="it">${icon(a)}<div class="nm">${esc(nameOf(a))}<small>${esc(a.native ? a.pkg : (a.target === "internal:themes" ? "Launcher themes" : a.target))}</small></div>
+        <button class="mini ${onH ? "on" : ""}" data-act="${onH ? "unhomeA" : "homeA"}" data-v="${esc(a.id)}">${onH ? "On home" : "Add"}</button>
+        <button class="mini ${hid ? "on" : ""}" data-act="${hid ? "unhide" : "hide"}" data-v="${esc(a.id)}">${hid ? "Hidden" : "Hide"}</button></div>`; }).join("")}</div>
+    <h3>Add a shortcut</h3><div class="form">
+      <input type="text" id="nName" placeholder="Name, for example Odnil Movies" autocomplete="off">
+      <input type="text" id="nLink" placeholder="Website, or app package like com.spotify.music" autocomplete="off" autocapitalize="off">
+      <div class="swatches"><span>Colour</span><input type="color" id="nColor" value="#3E91FF"></div>
+      <button class="btn" data-act="addApp">Add shortcut</button></div>`;
+  } else {
+    h = `<h3>Gestures</h3>${tog("swipeDown","Swipe down on Home to search apps")}
+    <h3>App drawer order</h3>${seg("sort", [["az","A to Z"],["used","Most used"]])}
+    <h3>Home app</h3>
+    <button class="btn" data-act="setDefault">Set as default home app</button><button class="btn alt" data-act="refresh">Refresh app list</button>
+    <p class="hint">${NATIVE_ON ? "Choose Odnil Launcher in the list that opens, then pick Always." : "Setting the default home app and listing real apps only work in the installed APK."}</p>
+    <h3>Backup</h3>
+    <button class="btn alt" data-act="backup">Copy my settings</button><button class="btn alt" data-act="restore">Paste settings</button>
+    <h3>Reset</h3><button class="btn alt" data-act="reset">Reset launcher</button>`;
+  }
+  const keep = $("#sbody").scrollTop;
+  $("#sbody").innerHTML = h; $("#sbody").scrollTop = tab === sheetTab ? keep : 0; sheetTab = tab;
+}
+
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if(!b || !$("#sheet").contains(b)) return;
+  const a = b.dataset.act, v = b.dataset.v, k = b.dataset.k;
+  if(a === "closeSheet"){ closeSheet(); return; }
+  if(a === "tab"){ tab = v; renderSheet(); return; }
+  if(a === "theme"){ S.theme = v; S.wall = "theme"; S.wallImg = ""; }
+  else if(a === "accent"){ S.accent = v; }
+  else if(a === "set"){ S[k] = NUMKEYS.has(k) ? +v : v; }
+  else if(a === "wall"){ S.wall = v; S.wallImg = ""; }
+  else if(a === "nophoto"){ S.wallImg = ""; }
+  else if(a === "homeA"){ const pg = S.pages[curHomePage()]; if(!pg.includes(v)) pg.push(v); }
+  else if(a === "unhomeA"){ S.pages = S.pages.map(p => p.filter(x => x !== v)); }
+  else if(a === "hide"){ if(!S.hidden.includes(v)) S.hidden.push(v); }
+  else if(a === "unhide"){ S.hidden = S.hidden.filter(x => x !== v); }
+  else if(a === "addPage"){ if(S.pages.length < 5) S.pages.push([]); }
+  else if(a === "delPage"){ if(S.pages.length > 1 && (!S.pages[S.pages.length - 1].length || confirm("The last page has apps on it. Remove it anyway?"))) S.pages.pop(); }
+  else if(a === "addApp"){
+    const name = $("#nName").value.trim(), link = normalizeTarget($("#nLink").value);
+    if(!name || !link){ toast("Enter a name and a link first"); return; }
+    const id = "c" + Date.now();
+    S.apps.push({id, name, icon:"", color:$("#nColor").value, target:link, custom:true}); S.pages[curHomePage()].push(id);
+    toast(name + " added to Home");
+  }
+  else if(a === "setDefault"){ if(LP) LP.homeSettings().catch(() => toast("Open Settings > Apps > Default apps > Home app")); else toast("Install the APK first, then set it as default"); return; }
+  else if(a === "refresh"){ if(LP) loadNative(false); else toast("Only works in the installed APK"); return; }
+  else if(a === "backup"){
+    const copy = Object.assign({}, S, {wallImg:""});
+    (navigator.clipboard ? navigator.clipboard.writeText(JSON.stringify(copy)) : Promise.reject()).then(() => toast("Settings copied. Paste them somewhere safe."), () => toast("Could not copy"));
+    return;
+  }
+  else if(a === "restore"){
+    const t = prompt("Paste your copied settings here");
+    if(!t) return;
+    try{ const o = JSON.parse(t); if(typeof o !== "object" || !o.pages) throw 0; S = Object.assign(defaults(), o); toast("Settings restored"); }
+    catch(err){ toast("That does not look like saved settings"); return; }
+  }
+  else if(a === "reset"){
+    if(!confirm("Reset all launcher settings and apps?")) return;
+    S = Object.assign(defaults(), {apps:clone(DEFAULT_APPS), pages:[DEF_HOME.slice()], dock:DEF_DOCK.slice()});
+    autoLayout();
+  }
+  else return;
+  save(); apply(); renderSheet();
+});
+document.addEventListener("input", e => {
+  const b = e.target;
+  if(b.id === "nt"){ S.notes = b.value; clearTimeout(input.h); input.h = setTimeout(save, 400); return; }
+  if(!$("#sheet").contains(b)) return;
+  if(b.dataset.act === "rng"){ S[b.dataset.k] = +b.value; $("#v_" + b.dataset.k).textContent = b.value + b.dataset.u; save(); apply(); }
+});
+const input = {h:0};
+document.addEventListener("change", e => {
+  const b = e.target; if(!$("#sheet").contains(b)) return;
+  const a = b.dataset.act;
+  if(a === "tog"){ S[b.dataset.k] = b.checked; save(); apply(); renderSheet(); }
+  if(a === "accentPick"){ S.accent = b.value; save(); apply(); renderSheet(); }
+  if(a === "photo" && b.files[0]) readPhoto(b.files[0]);
+});
+function readPhoto(file){
+  const r = new FileReader();
+  r.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const max = 1280, sc = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement("canvas"); c.width = Math.round(img.width * sc); c.height = Math.round(img.height * sc);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      S.wallImg = c.toDataURL("image/jpeg", .8); save(); apply(); renderSheet();
+    };
+    img.onerror = () => toast("That photo could not be opened");
+    img.src = r.result;
+  };
+  r.readAsDataURL(file);
+}
+
+apply();
+</script>
+</body>
+</html>
