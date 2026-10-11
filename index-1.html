@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Underground Odnil – Free downloads and services</title>
+<style>
+  :root{
+    --ink:#1b1f4b; --ink-soft:#4a4f7a; --sun:#f2b705; --teal:#0e9aa7;
+    --bg:#eef1f7; --card:#ffffff; --line:#d9deec;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --ink:#eef0ff; --ink-soft:#a9aed6; --bg:#12142e; --card:#1c1f45; --line:#2e3263; }
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Trebuchet MS",Verdana,system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  header{background:#1b1f4b;color:#fff;padding:18px 16px 22px}
+  .wrap{max-width:900px;margin:0 auto}
+  .logo{font-size:1.6rem;font-weight:800;letter-spacing:-.5px}
+  .logo span{color:var(--sun)}
+  header p{color:#c9ceff;margin-top:4px;font-size:.95rem}
+  .search{margin-top:14px;display:flex}
+  .search input{flex:1;padding:12px 14px;border:0;border-radius:10px;font-size:1rem;min-width:0}
+  nav{display:flex;gap:8px;padding:14px 16px 0;max-width:900px;margin:0 auto;overflow-x:auto}
+  nav button{flex:1;padding:11px 14px;border:2px solid var(--line);background:var(--card);color:var(--ink);
+    border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;white-space:nowrap}
+  nav button[aria-selected="true"]{background:var(--sun);border-color:var(--sun);color:#1b1f4b}
+  button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+  #genres{display:flex;gap:8px;padding:10px 16px 0;max-width:900px;margin:0 auto;overflow-x:auto}
+  #genres:empty{display:none}
+  #genres button{padding:7px 13px;border:1px solid var(--line);background:transparent;color:var(--ink);
+    border-radius:999px;font-size:.88rem;cursor:pointer;white-space:nowrap}
+  #genres button[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+  .genre{display:inline-block;margin-top:2px;font-size:.72rem;font-weight:700;color:var(--teal)}
+  main{max-width:900px;margin:0 auto;padding:14px 16px 40px}
+  .item{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:12px;margin-bottom:10px}
+  .badge{flex:none;width:46px;height:46px;border-radius:10px;background:var(--teal);color:#fff;
+    display:grid;place-items:center;font-weight:800;font-size:.8rem}
+  .badge.price{background:var(--sun);color:#1b1f4b;width:auto;min-width:64px;padding:0 8px}
+  .item h3{font-size:1rem}
+  .item p{font-size:.85rem;color:var(--ink-soft)}
+  .info{flex:1;min-width:0}
+  .dl{flex:none;background:var(--ink);color:var(--card);text-decoration:none;font-weight:700;
+    padding:10px 14px;border-radius:9px;font-size:.9rem}
+  .empty{padding:30px 0;text-align:center;color:var(--ink-soft)}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px}
+  .panel h2{font-size:1.1rem;margin-bottom:6px}
+  .panel p,.panel li{font-size:.95rem;color:var(--ink-soft);margin-bottom:6px}
+  .panel ul{padding-left:20px}
+  .panel a{color:var(--teal);font-weight:700}
+  .lead{color:var(--ink-soft);margin-bottom:12px}
+  .form label{display:block;font-weight:700;font-size:.9rem;margin:12px 0 4px}
+  .form input,.form select,.form textarea{width:100%;padding:11px 12px;border:1px solid var(--line);
+    border-radius:9px;font:inherit;background:var(--bg);color:var(--ink)}
+  .form textarea{min-height:90px;resize:vertical}
+  .form .row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+  .form .row button{flex:1;min-width:150px;padding:12px;border:0;border-radius:10px;font:inherit;font-weight:700;cursor:pointer}
+  .btn-wa{background:var(--sun);color:#1b1f4b}
+  .btn-mail{background:var(--ink);color:var(--card)}
+  .err{color:#d6336c;font-size:.88rem;margin-top:10px;min-height:1.2em}
+  .linkbtn{background:none;border:0;color:var(--teal);font:inherit;font-weight:700;cursor:pointer;text-decoration:underline}
+  footer{max-width:900px;margin:0 auto;padding:0 16px 30px;font-size:.8rem;color:var(--ink-soft)}
+</style>
+</head>
+<body>
+
+<!--
+=====================================================================
+HOW TO MAKE THIS SITE YOURS  (read this first)
+
+Everything you need to change is inside the <script> at the bottom:
+
+1. SETTINGS   – site name, tagline, your WhatsApp number, email, about text.
+2. items      – the download list. Each item has a genre; genres become
+                 the filter buttons automatically.
+3. services   – your paid services and their prices.
+4. faq        – questions and answers on the Info tab.
+
+REQUESTS
+The Request tab sends visitors' requests to the WhatsApp number and
+email in SETTINGS. There is no database: each request arrives as a
+WhatsApp message or an email from the visitor's own phone.
+
+RULES
+- Keep the quotes "like this" and the commas at the end of each line.
+- To ADD something, copy one whole line { ... }, paste it under the
+  last one in that list, and change the words.
+- To REMOVE something, delete its whole line.
+- A download link must start with https://
+- WhatsApp number format: country code + number, no plus, no spaces.
+  Example for South Africa: 27821234567 (not 0821234567).
+- Only list content you own or that is free to share (public domain,
+  Creative Commons, open source). Check each licence.
+
+TO UPDATE THE LIVE SITE
+Save the file, then upload it again to GitHub Pages / Netlify /
+Cloudflare Pages (replace the old index.html).
+=====================================================================
+-->
+
+<header>
+  <div class="wrap">
+    <div class="logo" id="siteName"></div>
+    <p id="tagline"></p>
+    <div class="search">
+      <input id="q" type="search" placeholder="Search downloads" aria-label="Search downloads">
+    </div>
+  </div>
+</header>
+
+<nav role="tablist" aria-label="Sections">
+  <button role="tab" data-cat="movies" aria-selected="true">Movies</button>
+  <button role="tab" data-cat="music" aria-selected="false">Music</button>
+  <button role="tab" data-cat="apps" aria-selected="false">Apps</button>
+  <button role="tab" data-cat="services" aria-selected="false">Services</button>
+  <button role="tab" data-cat="request" aria-selected="false">Request</button>
+  <button role="tab" data-cat="info" aria-selected="false">Info</button>
+</nav>
+
+<div id="genres" role="group" aria-label="Genres"></div>
+
+<main id="list" aria-live="polite"></main>
+
+<footer id="footer"></footer>
+
+<script>
+/* ============ 1. SETTINGS: change these ============ */
+const SETTINGS = {
+  siteName: "Underground Odnil",           // shown at the top (last word is highlighted)
+  tagline: "Free downloads and affordable services.",
+  whatsapp: "27631064913",                  // your number, country code first, no + or spaces
+  email: "malindolas@gmail.com",
+  currency: "R",                            // R for Rand
+  about: "Underground Odnil shares free movies, music and apps that are legal to download, and offers low-cost digital services. Everything on the download tabs is public domain, Creative Commons or open source."
+};
+
+/* ============ 2. DOWNLOADS: add your own ============
+   cat:   "movies" | "music" | "apps"
+   genre: the category button it appears under (any word you like,
+          e.g. "Horror". New genres appear automatically.)
+   tag:   short label shown in the box (MP4, MP3, APK, APP ...)
+   link:  the page or file to download from (must start with https://) */
+const items = [
+  // ---------- MOVIES ----------
+  {cat:"movies", genre:"Animation", name:"Big Buck Bunny", note:"Blender open movie, Creative Commons", tag:"MP4", link:"https://peach.blender.org/download/"},
+  {cat:"movies", genre:"Animation", name:"Sintel", note:"Blender open movie, Creative Commons", tag:"MP4", link:"https://durian.blender.org/download/"},
+  {cat:"movies", genre:"Animation", name:"Elephants Dream", note:"The first Blender open movie", tag:"MP4", link:"https://orange.blender.org/download/"},
+  {cat:"movies", genre:"Sci-Fi", name:"Tears of Steel", note:"Sci-fi short film, Creative Commons", tag:"MP4", link:"https://mango.blender.org/download/"},
+  {cat:"movies", genre:"Sci-Fi", name:"Public domain sci-fi films", note:"Classic sci-fi on the Internet Archive", tag:"MP4", link:"https://archive.org/search?query=collection%3Afeature_films+AND+subject%3A%22science+fiction%22"},
+  {cat:"movies", genre:"Horror", name:"Public domain horror films", note:"Classic horror on the Internet Archive", tag:"MP4", link:"https://archive.org/search?query=collection%3Afeature_films+AND+subject%3Ahorror"},
+  {cat:"movies", genre:"Classics", name:"Public domain feature films", note:"Thousands of old films, Internet Archive", tag:"MP4", link:"https://archive.org/details/feature_films"},
+  {cat:"movies", genre:"Classics", name:"Silent films", note:"Early cinema, free to download", tag:"MP4", link:"https://archive.org/details/silent_films"},
+  {cat:"movies", genre:"Documentary", name:"Free documentaries", note:"Documentaries on the Internet Archive", tag:"MP4", link:"https://archive.org/search?query=subject%3Adocumentary+AND+mediatype%3Amovies"},
+
+  // ---------- MUSIC ----------
+  {cat:"music", genre:"Hip-Hop", name:"Free Music Archive: Hip-Hop", note:"Free-to-download tracks, check each licence", tag:"MP3", link:"https://freemusicarchive.org/genre/Hip-Hop/"},
+  {cat:"music", genre:"Electronic", name:"Free Music Archive: Electronic", note:"Beats, house and ambient", tag:"MP3", link:"https://freemusicarchive.org/genre/Electronic/"},
+  {cat:"music", genre:"Rock", name:"Free Music Archive: Rock", note:"Independent rock artists", tag:"MP3", link:"https://freemusicarchive.org/genre/Rock/"},
+  {cat:"music", genre:"Jazz", name:"Free Music Archive: Jazz", note:"Free jazz recordings", tag:"MP3", link:"https://freemusicarchive.org/genre/Jazz/"},
+  {cat:"music", genre:"Classical", name:"Free Music Archive: Classical", note:"Free classical recordings", tag:"MP3", link:"https://freemusicarchive.org/genre/Classical/"},
+  {cat:"music", genre:"Afro", name:"Afro music on Jamendo", note:"Independent artists, Creative Commons", tag:"MP3", link:"https://www.jamendo.com/search?q=afro"},
+  {cat:"music", genre:"All genres", name:"Jamendo Music", note:"Independent artists, Creative Commons", tag:"MP3", link:"https://www.jamendo.com"},
+  {cat:"music", genre:"All genres", name:"Internet Archive audio", note:"Public domain and live recordings", tag:"MP3", link:"https://archive.org/details/audio"},
+
+  // ---------- APPS ----------
+  {cat:"apps", genre:"Media", name:"VLC media player", note:"Plays almost any video or audio file", tag:"APP", link:"https://www.videolan.org/vlc/"},
+  {cat:"apps", genre:"Media", name:"OBS Studio", note:"Record your screen or stream live", tag:"APP", link:"https://obsproject.com/"},
+  {cat:"apps", genre:"Creative", name:"Audacity", note:"Record and edit audio", tag:"APP", link:"https://www.audacityteam.org/download/"},
+  {cat:"apps", genre:"Creative", name:"GIMP", note:"Photo editing, like Photoshop", tag:"APP", link:"https://www.gimp.org/downloads/"},
+  {cat:"apps", genre:"Creative", name:"Blender", note:"3D modelling and animation", tag:"APP", link:"https://www.blender.org/download/"},
+  {cat:"apps", genre:"Office", name:"LibreOffice", note:"Free Word, Excel and PowerPoint alternative", tag:"APP", link:"https://www.libreoffice.org/download/"},
+  {cat:"apps", genre:"Security", name:"Bitwarden", note:"Password manager", tag:"APP", link:"https://bitwarden.com/download/"},
+  {cat:"apps", genre:"Security", name:"KeePassXC", note:"Offline password manager", tag:"APP", link:"https://keepassxc.org/download/"},
+  {cat:"apps", genre:"Utilities", name:"7-Zip", note:"Open ZIP, RAR and other archives", tag:"APP", link:"https://www.7-zip.org/"},
+  {cat:"apps", genre:"Utilities", name:"Firefox", note:"Fast, private web browser", tag:"APP", link:"https://www.mozilla.org/firefox/new/"},
+  {cat:"apps", genre:"Utilities", name:"Kiwix", note:"Read Wikipedia offline and save data", tag:"APP", link:"https://www.kiwix.org/en/download/"},
+  {cat:"apps", genre:"Android", name:"F-Droid", note:"Store of free and open-source Android apps", tag:"APK", link:"https://f-droid.org"}
+];
+
+/* ============ 3. PAID SERVICES: set your own ============
+   price: just the number (the currency comes from SETTINGS)
+   Customers tap "Order" and a WhatsApp chat opens with the service name filled in. */
+const services = [
+  {name:"Website setup", note:"A simple free-hosted website like this one", price:"350"},
+  {name:"Phone setup and app install", note:"Clean-up, updates and useful free apps", price:"100"},
+  {name:"Audio and video editing", note:"Trim, join and convert your own files", price:"80"},
+  {name:"CV and document typing", note:"Typed, formatted and sent as PDF or Word", price:"60"}
+];
+
+/* ============ 4. INFO TAB QUESTIONS ============ */
+const faq = [
+  {q:"Is everything here free?", a:"Yes. Every item on the Movies, Music and Apps tabs is free. Only the Services tab costs money."},
+  {q:"How do I download?", a:"Open a tab, tap Download and you are taken to the original source. Follow the download button on that page."},
+  {q:"How do I pay for a service?", a:"Tap Order on the Services tab. We chat on WhatsApp, agree the price and how to pay, and you pay before work starts."},
+  {q:"Can I suggest something to add?", a:"Yes. Use the Request tab to send us the name and link. We only add content that is free and legal to share."}
+];
+
+/* ============ Code below: you do not need to change ============ */
+let cat = "movies";
+let genre = "All";
+const list = document.getElementById("list");
+const q = document.getElementById("q");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+const words = SETTINGS.siteName.split(" ");
+document.getElementById("siteName").innerHTML =
+  esc(words.slice(0,-1).join(" ")) + (words.length > 1 ? " " : "") + "<span>" + esc(words.slice(-1)[0]) + "</span>";
+document.getElementById("tagline").textContent = SETTINGS.tagline;
+document.title = SETTINGS.siteName;
+document.getElementById("footer").textContent =
+  "© " + new Date().getFullYear() + " " + SETTINGS.siteName + ". Downloads link to their original sources. Check each file's licence before sharing it.";
+
+const wa = text => "https://wa.me/" + SETTINGS.whatsapp + "?text=" + encodeURIComponent(text);
+
+function renderDownloads(term){
+  const shown = items.filter(i =>
+    (term ? true : i.cat === cat && (genre === "All" || i.genre === genre)) &&
+    (!term || (i.name + " " + i.note).toLowerCase().includes(term)));
+  list.innerHTML = shown.length ? shown.map(i => `
+    <article class="item">
+      <div class="badge">${esc(i.tag)}</div>
+      <div class="info"><h3>${esc(i.name)}</h3><p>${esc(i.note)}</p><span class="genre">${esc(i.genre || "")}</span></div>
+      <a class="dl" href="${esc(i.link)}" target="_blank" rel="noopener">Download</a>
+    </article>`).join("")
+    : '<p class="empty">Nothing found. Try a different word, or <button class="linkbtn" id="goReq">request it</button>.</p>';
+  const g = document.getElementById("goReq");
+  if (g) g.addEventListener("click", () => openTab("request"));
+}
+
+function renderServices(){
+  list.innerHTML = '<p class="lead">Paid services. Tap Order to chat with us on WhatsApp.</p>' +
+    services.map(s => `
+    <article class="item">
+      <div class="badge price">${esc(SETTINGS.currency + s.price)}</div>
+      <div class="info"><h3>${esc(s.name)}</h3><p>${esc(s.note)}</p></div>
+      <a class="dl" href="${esc(wa("Hi, I would like to order: " + s.name))}" target="_blank" rel="noopener">Order</a>
+    </article>`).join("");
+}
+
+function renderRequest(){
+  list.innerHTML = `
+    <section class="panel form">
+      <h2>Request a movie, song or app</h2>
+      <p>Tell us what you want added. We only add content that is free and legal to share, such as public domain, Creative Commons or open source. If you own the file, send us the link.</p>
+      <label for="rType">What is it?</label>
+      <select id="rType">
+        <option>Movie</option><option>Song</option><option>App</option><option>Other file</option>
+      </select>
+      <label for="rTitle">Name</label>
+      <input id="rTitle" placeholder="Name of the movie, song or app">
+      <label for="rLink">Link (if you have one)</label>
+      <input id="rLink" type="url" placeholder="https://">
+      <label for="rNote">Anything else we should know?</label>
+      <textarea id="rNote" placeholder="Artist, year, version, or why you want it"></textarea>
+      <label for="rFrom">Your name (optional)</label>
+      <input id="rFrom" placeholder="Your name">
+      <div class="err" id="rErr" role="alert"></div>
+      <div class="row">
+        <button type="button" class="btn-wa" id="rWa">Send on WhatsApp</button>
+        <button type="button" class="btn-mail" id="rMail">Send by email</button>
+      </div>
+    </section>`;
+  const val = id => document.getElementById(id).value.trim();
+  const build = () => {
+    if (!val("rTitle")) {
+      document.getElementById("rErr").textContent = "Please type the name first.";
+      document.getElementById("rTitle").focus();
+      return null;
+    }
+    document.getElementById("rErr").textContent = "";
+    return [
+      "Request for " + SETTINGS.siteName,
+      "Type: " + val("rType"),
+      "Name: " + val("rTitle"),
+      val("rLink") ? "Link: " + val("rLink") : "",
+      val("rNote") ? "Notes: " + val("rNote") : "",
+      val("rFrom") ? "From: " + val("rFrom") : ""
+    ].filter(Boolean).join("\n");
+  };
+  document.getElementById("rWa").addEventListener("click", () => {
+    const m = build(); if (m) window.open(wa(m), "_blank", "noopener");
+  });
+  document.getElementById("rMail").addEventListener("click", () => {
+    const m = build();
+    if (m) location.href = "mailto:" + SETTINGS.email + "?subject=" +
+      encodeURIComponent("Request: " + val("rTitle")) + "&body=" + encodeURIComponent(m);
+  });
+}
+
+function renderInfo(){
+  list.innerHTML = `
+    <section class="panel"><h2>About us</h2><p>${esc(SETTINGS.about)}</p></section>
+    <section class="panel"><h2>Contact</h2>
+      <p><a href="${esc(wa("Hi, I have a question about " + SETTINGS.siteName))}" target="_blank" rel="noopener">Chat on WhatsApp</a></p>
+      <p><a href="mailto:${esc(SETTINGS.email)}">${esc(SETTINGS.email)}</a></p>
+    </section>
+    <section class="panel"><h2>Questions</h2>
+      <ul>${faq.map(f => `<li><strong>${esc(f.q)}</strong><br>${esc(f.a)}</li>`).join("")}</ul>
+    </section>`;
+}
+
+function renderGenres(show){
+  const box = document.getElementById("genres");
+  if (!show) { box.innerHTML = ""; return; }
+  const names = ["All", ...new Set(items.filter(i => i.cat === cat).map(i => i.genre).filter(Boolean))];
+  box.innerHTML = names.map(n =>
+    `<button data-genre="${esc(n)}" aria-pressed="${n === genre}">${esc(n)}</button>`).join("");
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    genre = b.dataset.genre; render();
+  }));
+}
+
+function render(){
+  const term = q.value.trim().toLowerCase();
+  renderGenres(!term && (cat === "movies" || cat === "music" || cat === "apps"));
+  if (term) return renderDownloads(term);
+  if (cat === "services") return renderServices();
+  if (cat === "request") return renderRequest();
+  if (cat === "info") return renderInfo();
+  renderDownloads("");
+}
+
+function openTab(name){
+  cat = name; genre = "All"; q.value = "";
+  document.querySelectorAll("nav button").forEach(x => x.setAttribute("aria-selected", x.dataset.cat === name));
+  render();
+}
+document.querySelectorAll("nav button").forEach(b => b.addEventListener("click", () => openTab(b.dataset.cat)));
+q.addEventListener("input", render);
+render();
+</script>
+</body>
+</html>
